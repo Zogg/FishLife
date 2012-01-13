@@ -6,11 +6,12 @@ from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.progressbar import ProgressBar
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse, Line
 from kivy.animation import Animation
 from kivy.clock import Clock
-from kivy.properties import BooleanProperty, StringProperty
+from kivy.properties import BooleanProperty, StringProperty, NumericProperty
 
 class MyPaintWidget(Widget):
 
@@ -56,9 +57,10 @@ class FishLifeBones(App):
         
         
         self.game_screen = Widget(width=Window.width, height=Window.height)
-        self.menu = Widget(width=Window.width, height=200, pos=(0,0))
-        self.menu.add_widget(Label(text="Calories stockpiled", pos_hint={'top':0.5, 'right': 0.3}))
-        self.menu.add_widget(ProgressBar(max=1000, pos_hint={'top':0.5, 'right': 0.5}))
+        self.menu = GridLayout(cols=2, row_force_default=True, row_default_height=100, width=Window.width, height=200, pos=(0,0))
+        self.menu.add_widget(Label(text="Calories stockpiled", width=100))
+        self.calories = ProgressBar(max=1000, value=1000)
+        self.menu.add_widget(self.calories)
         self.game_area = Widget(width=Window.width, height=Window.height)
         self.game_screen.add_widget(self.menu)
         self.game_screen.add_widget(self.game_area)
@@ -69,10 +71,14 @@ class FishLifeBones(App):
                 
         self.fish = Fish(size=(48,48))
         self.fish.bind(active=lambda instance, value: self.animations['fish']['drop_in'].start(instance))
-        self.fish.bind(pos=self.check_for_collisions)
+        self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
+        self.fish.bind(calories=self.on_calories_change)
         
         return self.welcome_screen
-    
+        
+    def on_calories_change(self, instance, value):
+        self.calories.value = value
+        
     def on_scene_change(self, instance, value):
         self.scenes[value]()
         
@@ -91,18 +97,21 @@ class FishLifeBones(App):
         self.fish.active = True
         
         Clock.schedule_interval(self.drop_food, 1)
-        Clock.schedule_interval(self.sail_ships, 8)
+        Clock.schedule_interval(self.sail_ships, 5)
+        Clock.schedule_interval(self.check_for_smthing_to_eat, 0.4)
+        
 
-    def check_for_collisions(self, instance, value):
+    def check_for_smthing_to_eat(self, dt):
         to_eat = []
-        for stuff in instance.parent.children:
-            if stuff.collide_widget(instance):
+        for stuff in self.game_area.children:
+            if stuff.collide_widget(self.fish):
                 if isinstance(stuff, Food):
                     to_eat.append(stuff)
                 
         for shit in to_eat:
             shit.parent.remove_widget(shit)
-            print "eaten! ", str(id(shit))
+            self.fish.calories = self.fish.calories + shit.calories if self.fish.calories + shit.calories <= 1000 else 1000
+            print "eaten! ", self.fish.calories
             del(shit)
         
     def drop_food(self, smthing):
@@ -141,11 +150,18 @@ class FishLifeBones(App):
 class Fish(Image):
     active = BooleanProperty(False)
     alive = BooleanProperty(True)
+    calories = NumericProperty(1000)
+    obese_lvl = NumericProperty(1)
     
     def __init__(self, image = "preferences-desktop-accessibility.png", **kwargs):
         self.source = image
         super(Fish, self).__init__(**kwargs)
+        self.bind(active=lambda instance, value: Clock.schedule_interval(instance.consume_calories, 0.5) if value else Clock.unschedule(instance.consume_calories) )
         
+    
+    def consume_calories(self, *kwargs):
+        self.calories -= 7
+            
     def on_touch_move(self, touch):
         self.pos = (touch.x, touch.y)
     
@@ -176,7 +192,7 @@ class Food(Image):
         self.source = image        
         super(Food, self).__init__(**kwargs)
         self.size = (48, 48)
-        self.calories = 30
+        self.calories = randint(5, 20)
  
 if __name__ == '__main__':
     FishLifeBones().run()

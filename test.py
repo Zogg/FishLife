@@ -12,6 +12,7 @@ from kivy.vector import Vector
 from kivy.graphics import Color, Ellipse, Line
 from kivy.animation import Animation
 from kivy.clock import Clock
+from kivy.graphics.instructions import *
 from kivy.properties import BooleanProperty, StringProperty, NumericProperty
 
 class FishLifeBones(App):
@@ -48,6 +49,9 @@ class FishLifeBones(App):
         self.calories = ProgressBar(max=1000, value=1000)
         self.menu.add_widget(self.calories)
         self.game_area = Image(width=Window.width, height=Window.height, source="images/bg.png")
+        with self.game_area.Canvas:
+            Color(1,1,1)
+            Rectangle(pos=self.game_area.pos, size=self.game_area.size)
         self.game_screen.add_widget(self.menu)
         self.game_screen.add_widget(self.game_area)
         

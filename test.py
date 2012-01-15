@@ -61,7 +61,7 @@ class FishLifeBones(App):
         self.menu.add_widget(Label(text="Calories stockpiled", width=100))
         self.calories = ProgressBar(max=1000, value=1000)
         self.menu.add_widget(self.calories)
-        self.game_area = Widget(width=Window.width, height=Window.height)
+        self.game_area = Image(width=Window.width, height=Window.height, image="images/bg.png")
         self.game_screen.add_widget(self.menu)
         self.game_screen.add_widget(self.game_area)
         

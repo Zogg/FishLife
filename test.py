@@ -12,7 +12,7 @@ from kivy.vector import Vector
 from kivy.graphics import Color, Ellipse, Line
 from kivy.animation import Animation
 from kivy.clock import Clock
-from kivy.graphics.instructions import *
+from kivy.graphics.vertex_instructions import *
 from kivy.properties import BooleanProperty, StringProperty, NumericProperty
 
 class FishLifeBones(App):
@@ -25,10 +25,10 @@ class FishLifeBones(App):
         self.scenes = {"intro": self.scene_intro, "gameplay": self.scene_gameplay}        
         
     def build_config(self, config):
-        config.setdefaults('aquarium', {"waterline": 250})
+        config.setdefaults('aquarium', {"waterline":200})
         
     def build(self):
-        self.animations = {"ship": {"drop_in": Animation(y=Window.height - self.config.getint('aquarium', 'waterline'), t="out_back", d=1.2),
+        self.animations = {"ship": {"drop_in": Animation(y=Window.height +50 -self.config.getint('aquarium', 'waterline'), t="out_back", d=1.2),
                                     "sail": Animation(x=Window.width)
                                    },
                            "fish": {"drop_in": Animation(y=Window.height - 400, t="out_back", d=1.2)},
@@ -48,10 +48,10 @@ class FishLifeBones(App):
         self.menu.add_widget(Label(text="Calories stockpiled", width=100))
         self.calories = ProgressBar(max=1000, value=1000)
         self.menu.add_widget(self.calories)
-        self.game_area = Image(width=Window.width, height=Window.height, source="images/bg.png")
-        with self.game_area.Canvas:
+        self.game_area = Widget(width=Window.width, height=Window.height)
+        with self.game_area.canvas:
             Color(1,1,1)
-            Rectangle(pos=self.game_area.pos, size=self.game_area.size)
+            Rectangle(source="images/bg.png", pos=self.game_area.pos, size=self.game_area.size)
         self.game_screen.add_widget(self.menu)
         self.game_screen.add_widget(self.game_area)
         

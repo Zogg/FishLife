@@ -8,25 +8,11 @@ from kivy.uix.progressbar import ProgressBar
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.core.window import Window
+from kivy.vector import Vector
 from kivy.graphics import Color, Ellipse, Line
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.properties import BooleanProperty, StringProperty, NumericProperty
-
-class MyPaintWidget(Widget):
-
-    def on_touch_down(self, touch):
-        userdata = touch.ud
-        userdata['color'] = c = (random(), 1, 1)
-        with self.canvas:
-            Color(*c, mode='hsv')
-            d = 30
-            Ellipse(pos=(touch.x - d/2, touch.y - d/2), size=(d, d))
-            userdata['line'] = Line(points=(touch.x, touch.y))
-
-    def on_touch_move(self, touch):
-        touch.ud['line'].points += [touch.x, touch.y]
-
 
 class FishLifeBones(App):
     
@@ -61,7 +47,7 @@ class FishLifeBones(App):
         self.menu.add_widget(Label(text="Calories stockpiled", width=100))
         self.calories = ProgressBar(max=1000, value=1000)
         self.menu.add_widget(self.calories)
-        self.game_area = Image(width=Window.width, height=Window.height, image="images/bg.png")
+        self.game_area = Image(width=Window.width, height=Window.height, source="images/bg.png")
         self.game_screen.add_widget(self.menu)
         self.game_screen.add_widget(self.game_area)
         
@@ -160,6 +146,7 @@ class Fish(Image):
     calories_consumption = 7
     
     def __init__(self, image = "images/fish.png", **kwargs):
+        self.direction = Vector(0, 0)
         self.source = image
         super(Fish, self).__init__(allow_stretch=True, **kwargs)
         self.register_event_type('on_death')

@@ -159,7 +159,7 @@ class Fish(Image):
     lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060, 1140]
     calories_consumption = 7
     
-    def __init__(self, image = "preferences-desktop-accessibility.png", **kwargs):
+    def __init__(self, image = "images/fish.png", **kwargs):
         self.source = image
         super(Fish, self).__init__(allow_stretch=True, **kwargs)
         self.register_event_type('on_death')

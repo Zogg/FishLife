@@ -111,6 +111,9 @@ class FishLifeBones(App):
         for shit in to_eat:
             shit.parent.remove_widget(shit)
             self.fish.calories = self.fish.calories + shit.calories if self.fish.calories + shit.calories <= 1000 else 1000
+            # Scrap food does not count into total calories
+            if shit.calories > 0:
+                self.fish.total_calories += shit.calories
             print "eaten! ", self.fish.calories
             del(shit)
         
@@ -151,16 +154,35 @@ class Fish(Image):
     active = BooleanProperty(False)
     alive = BooleanProperty(True)
     calories = NumericProperty(1000)
+    total_calories = NumericProperty(0)
     obese_lvl = NumericProperty(1)
+    lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060, 1140]
+    calories_consumption = 7
     
     def __init__(self, image = "preferences-desktop-accessibility.png", **kwargs):
         self.source = image
-        super(Fish, self).__init__(**kwargs)
+        super(Fish, self).__init__(allow_stretch=True, **kwargs)
+        self.register_event_type('on_death')
+        # Every living creature consumes own self
         self.bind(active=lambda instance, value: Clock.schedule_interval(instance.consume_calories, 0.5) if value else Clock.unschedule(instance.consume_calories) )
-        
+        # Too many calories make you obese
+        self.bind(total_calories=self.lvlup)
     
     def consume_calories(self, *kwargs):
-        self.calories -= 7
+        self.calories -= self.calories_consumption * self.obese_lvl
+        if self.calories <= 0:
+            self.calories = 0
+            self.dispatch("on_death")
+    
+    def lvlup(self, instance, value):
+        if self.total_calories >= self.lvlup_on_calories[self.obese_lvl]:
+            self.obese_lvl += 1
+            self.size = (self.width + self.width * (1.0 / self.obese_lvl), self.height + self.height * (1.0 / self.obese_lvl))
+    
+    def on_death(self):
+        self.alive = False
+        self.active = False
+        print "dead"
             
     def on_touch_move(self, touch):
         self.pos = (touch.x, touch.y)

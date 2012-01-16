@@ -6,8 +6,12 @@ from kivy.properties import BooleanProperty
 class Food(Image):
     active = BooleanProperty(False)
 
-    def __init__(self, image = "dialog-information.png", **kwargs):
-        self.source = image        
+    def __init__(self, what="lightbulb", image = "dialog-information.png", **kwargs):
+        storehouse = {"lightbulb": "dialog-information.png",
+                      "banana": ""}
+                      
+        self.source = storehouse.get(what, "dialog-information.png")
+        
         super(Food, self).__init__(**kwargs)
         self.size = (48, 48)
         self.calories = randint(5, 20)

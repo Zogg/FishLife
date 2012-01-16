@@ -35,7 +35,7 @@ class FishLifeBones(App):
         self.welcome_screen.add_widget(begin)
         
         self.game_screen = Widget(width=Window.width, height=Window.height)
-        self.menu = GridLayout(cols=2, row_force_default=True, row_default_height=100, width=Window.width, height=200, pos=(0,0))
+        self.menu = GridLayout(cols=2, row_force_default=True, row_default_height=100, width=Window.width, height=100, pos=(0,0))
         self.menu.add_widget(Label(text="Starvation Meter", width=100))
         self.calories_bar = ProgressBar(max=1000, value=1000)
         self.menu.add_widget(self.calories_bar)
@@ -43,7 +43,9 @@ class FishLifeBones(App):
         with self.game_area.canvas:
             Color(1,1,1)
             Rectangle(source="images/bg.png", pos=self.game_area.pos, size=self.game_area.size)
+        self.waves = Image(source="images/waves.png", pos=(0, self.game_screen.top - 200))
         self.game_screen.add_widget(self.game_area)
+        self.game_screen.add_widget(self.waves)
         self.game_screen.add_widget(self.menu)
         
         self.manufacture_ships(3)

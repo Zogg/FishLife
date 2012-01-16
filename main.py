@@ -36,7 +36,7 @@ class FishLifeBones(App):
         
         self.game_screen = Widget(width=Window.width, height=Window.height)
         self.menu = GridLayout(cols=2, row_force_default=True, row_default_height=100, width=Window.width, height=200, pos=(0,0))
-        self.menu.add_widget(Label(text="Calories stockpiled", width=100))
+        self.menu.add_widget(Label(text="Starvation Meter", width=100))
         self.calories_bar = ProgressBar(max=1000, value=1000)
         self.menu.add_widget(self.calories_bar)
         self.game_area = Widget(width=Window.width, height=Window.height)

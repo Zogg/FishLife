@@ -1,4 +1,6 @@
 from random import random, randint
+from functools import partial
+
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
@@ -9,6 +11,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.core.window import Window
 from kivy.clock import Clock
+from kivy.graphics import Color
 from kivy.graphics.vertex_instructions import *
 from kivy.properties import BooleanProperty, StringProperty, NumericProperty
 
@@ -47,10 +50,13 @@ class FishLifeBones(App):
                 
         self.fish = Fish()
         self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
-        self.fish.bind(calories=lambda instance, value: self.calories_bar.value = value)
+        self.fish.bind(calories=self.update_calories_bar)
         
         return self.welcome_screen
-
+        
+    def update_calories_bar(self, instance, value):
+        self.calories_bar.value = value
+        
     def check_for_smthing_to_eat(self, dt):
         to_eat = []
         for stuff in self.game_area.children:
@@ -59,7 +65,7 @@ class FishLifeBones(App):
                     to_eat.append(stuff)
                 
         for shit in to_eat:
-            shit.parent.remove_widget(shit)
+            self.game_area.remove_widget(shit)
             self.fish.eat(shit.calories)
             print "eaten! ", self.fish.calories
             del(shit)
@@ -69,7 +75,10 @@ class FishLifeBones(App):
         
         for ship in self.ships:
             food = Food(x = ship.x + randint(0,50), y = ship.y + randint(0,30))
-            Clock.schedule_once(lambda td:  self.game_area.add_widget(food) and food.active = True, random * 2)
+            def really_drop_food(food, td):
+                 self.game_area.add_widget(food)
+                 food.active = True
+            Clock.schedule_once(partial(really_drop_food, food), random() * 2)
     
     def sail_ships(self, timer):
         for ship in self.ships:
@@ -91,7 +100,7 @@ class FishLifeBones(App):
             obj.text = "No more ships left!"
 
 
-def FishLifeFlesh(FishLifeBones):
+class FishLifeFlesh(FishLifeBones):
     def __init__(self):
         super(FishLifeFlesh, self).__init__()
     

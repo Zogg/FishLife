@@ -15,11 +15,11 @@ class Food(Image):
         
     def sinking(self, instance, value):
         anim = Animation(y=100, d=7)
-        anim &= Animation(x=food.x + 10, t="in_out_back", d=2) + \
-                Animation(x=food.x - 10, t="in_out_back", d=2) + \
-                Animation(x=food.x + 10, t="in_out_back", d=2) + \
-                Animation(x=food.x, t="in_out_back", d=1)
-        anim.start(food)
+        anim &= Animation(x=self.x + 10, t="in_out_back", d=2) + \
+                Animation(x=self.x - 10, t="in_out_back", d=2) + \
+                Animation(x=self.x + 10, t="in_out_back", d=2) + \
+                Animation(x=self.x, t="in_out_back", d=1)
+        anim.start(self)
         
 class Junk(Image):
     pass

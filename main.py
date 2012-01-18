@@ -43,7 +43,7 @@ class FishLifeBones(App):
         with self.game_area.canvas:
             Color(1,1,1)
             Rectangle(source="images/bg.png", pos=self.game_area.pos, size=self.game_area.size)
-        self.waves = Image(source="images/waves.png", pos=(0, self.game_screen.top - 178), size=(self.game_screen.width, 22))
+        self.waves = Image(source="images/waves.png", pos=(0, self.game_screen.top - 182), size=(self.game_screen.width, 28))
         self.waves.texture = self.waves.texture.get_region(0,0, self.game_screen.width, self.waves.height)
         self.game_screen.add_widget(self.game_area)
         self.game_screen.add_widget(self.waves)

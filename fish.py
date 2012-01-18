@@ -8,6 +8,9 @@ from kivy.clock import Clock
 from kivy.vector import Vector
 from kivy.properties import BooleanProperty, NumericProperty
 
+class DirectionalImage():
+    pass
+
 class Fish(Scatter):
     active = BooleanProperty(False)
     alive = BooleanProperty(True)
@@ -20,6 +23,7 @@ class Fish(Scatter):
     
     def __init__(self, image = "images/fish.png", box = (), **kwargs):
         self.direction = Vector(-1, 0)
+        self.angle = 1
         self.speed = 0
         
         self.size = (48,48)
@@ -27,7 +31,12 @@ class Fish(Scatter):
         self.center = (Window.width / 2, Window.height)
         self.source = image
         self.image = Image(source=image, allow_stretch=True, size=self.size)
-
+        
+        # Can't be arsed to 'rotate' texture 'properly', this is so frikin more simple
+        self.texture_left = self.image.texture.get_region(0, 0, 192, 188)
+        self.texture_right = self.image.texture.get_region(207, 0, 192, 188)
+        self.image.texture = self.texture_left
+        
         self.target_pos = self.center
         
         super(Fish, self).__init__(**kwargs)
@@ -61,6 +70,11 @@ class Fish(Scatter):
             self.size = self.image.size
             
     def swim(self, dt):
+        if self.angle > 0:
+            self.image.texture = self.texture_left
+        else:
+            self.image.texture = self.texture_right
+            
         anim = Animation(center=self.target_pos, d=0.1)
         anim.start(self)
         
@@ -73,14 +87,15 @@ class Fish(Scatter):
         Clock.schedule_interval(self.swim, 0.1)
         
     def on_touch_move(self, touch):
-        #self.direction = (touch.dsx, touch.dsy)
         angle = self.direction.angle((touch.dsx, touch.dsy))
 
-        if angle < 0:
-            angle = 360 + angle
-        angle = 270 - angle
-        
+        #if angle < 0:
+        #    angle = 360 + angle
+        #angle = 90 - angle
+        self.angle = cos(radians(angle)) * 180
         # TODO: solve facing glitch problem with Clock, which sets facing_change cooldown timer for half a sec
+        
+        # Bounding box
         x = touch.x
         if touch.x >= self.box[2]:
             x = self.box[2]

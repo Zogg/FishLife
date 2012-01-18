@@ -9,9 +9,10 @@ class Ship(Image):
     active = BooleanProperty(False)
     state = OptionProperty("fishing", options=["fishing", "sailing"])
     
-    def __init__(self, image = "gnome-dev-media-sdmmc.png", **kwargs):
+    def __init__(self, image = "images/ship.png", **kwargs):
         self.source = image
         self.horison = 200 # Pixels from the top of parent container
+        self.size = (292, 190)
         super(Ship, self).__init__(**kwargs)
         self.register_event_type('on_start_sailing')
         self.register_event_type('on_stop_sailing')

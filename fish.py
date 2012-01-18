@@ -22,6 +22,7 @@ class Fish(Scatter):
         self.speed = 0
         
         self.size = (48,48)
+        self.center = (Window.width / 2, Window.height)
         self.source = image
         self.image = Image(source=image, allow_stretch=True, size=self.size)
 
@@ -78,8 +79,6 @@ class Fish(Scatter):
         angle = 270 - angle
         
         # TODO: solve facing glitch problem with Clock, which sets facing_change cooldown timer for half a sec
-
-        #self.center = (touch.x + sin(radians(angle)) * self.speed * 10, touch.y + cos(radians(angle)) * self.speed * 10)
         self.target_pos = (touch.x, touch.y)
         
     def on_touch_up(self, touch):

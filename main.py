@@ -77,7 +77,7 @@ class FishLifeBones(App):
         """Periodicaly drop food from the ships"""
         
         for ship in self.ships:
-            food = Food(x = ship.x + randint(0,50), y = ship.y + randint(-5,5))
+            food = Food(what="bottle", lvl=self.fish.obese_lvl, x = ship.center_x + randint(-50,50), y = ship.center_y + randint(-5,5))
             def really_drop_food(food, td):
                  self.game_area.add_widget(food)
                  food.active = True

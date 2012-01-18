@@ -16,12 +16,14 @@ class Fish(Scatter):
     obese_lvl = NumericProperty(1)
     lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060, 1140]
     calories_consumption = 7
+    box = (0, 0, 100, 100)
     
-    def __init__(self, image = "images/fish.png", **kwargs):
+    def __init__(self, image = "images/fish.png", box = (), **kwargs):
         self.direction = Vector(-1, 0)
         self.speed = 0
         
         self.size = (48,48)
+        self.box = box
         self.center = (Window.width / 2, Window.height)
         self.source = image
         self.image = Image(source=image, allow_stretch=True, size=self.size)
@@ -79,7 +81,19 @@ class Fish(Scatter):
         angle = 270 - angle
         
         # TODO: solve facing glitch problem with Clock, which sets facing_change cooldown timer for half a sec
-        self.target_pos = (touch.x, touch.y)
+        x = touch.x
+        if touch.x >= self.box[2]:
+            x = self.box[2]
+        elif touch.x <= self.box[0]:
+            x = self.box[0]
+            
+        y = touch.y
+        if touch.y >= self.box[3]:
+            y = self.box[3]
+        elif touch.y <= self.box[1]:
+            y = self.box[1]
+            
+        self.target_pos = (x, y)
         
     def on_touch_up(self, touch):
         Clock.unschedule(self.swim)

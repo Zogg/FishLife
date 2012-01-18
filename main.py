@@ -51,7 +51,7 @@ class FishLifeBones(App):
         
         self.manufacture_ships(3)
                 
-        self.fish = Fish()
+        self.fish = Fish(box=(self.game_area.x, self.game_area.y + 100, self.game_area.width, self.game_area.height - 175))
         self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
         self.fish.bind(calories=self.update_calories_bar)
         
@@ -77,7 +77,7 @@ class FishLifeBones(App):
         """Periodicaly drop food from the ships"""
         
         for ship in self.ships:
-            food = Food(what="bottle", lvl=self.fish.obese_lvl, x = ship.center_x + randint(-50,50), y = ship.center_y + randint(-5,5))
+            food = Food(what="bottle", lvl=self.fish.obese_lvl, x = ship.center_x + randint(-50,50), y = ship.y + randint(-5,5))
             def really_drop_food(food, td):
                  self.game_area.add_widget(food)
                  food.active = True

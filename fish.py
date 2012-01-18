@@ -64,35 +64,35 @@ class Fish(Scatter):
             self.dispatch("on_death")
     
     def lvlup(self, instance, value):
-        if self.total_calories >= self.lvlup_on_calories[self.obese_lvl]:
-            self.obese_lvl += 1
-            self.image.size = (self.image.width + self.image.width * (1.0 / self.obese_lvl), self.image.height + self.image.height * (1.0 / self.obese_lvl))
-            self.size = self.image.size
+        try:
+            #TODO: will there be lvl limit?
+            if self.total_calories >= self.lvlup_on_calories[self.obese_lvl]:
+                self.obese_lvl += 1
+                self.image.size = (self.image.width + self.image.width * (1.0 / self.obese_lvl), self.image.height + self.image.height * (1.0 / self.obese_lvl))
+                self.size = self.image.size
+        except:
+            pass
             
     def swim(self, dt):
         if self.angle > 0:
             self.image.texture = self.texture_left
         else:
             self.image.texture = self.texture_right
-            
+  
         anim = Animation(center=self.target_pos, d=0.1)
         anim.start(self)
         
     def on_death(self):
         self.alive = False
         self.active = False
-        print "dead"
             
     def on_touch_down(self, touch):
         Clock.schedule_interval(self.swim, 0.1)
         
     def on_touch_move(self, touch):
         angle = self.direction.angle((touch.dsx, touch.dsy))
-
-        #if angle < 0:
-        #    angle = 360 + angle
-        #angle = 90 - angle
         self.angle = cos(radians(angle)) * 180
+        
         # TODO: solve facing glitch problem with Clock, which sets facing_change cooldown timer for half a sec
         
         # Bounding box

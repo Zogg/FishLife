@@ -35,4 +35,31 @@ class Food(Image):
         anim.start(self)
         
 class Junk(Image):
-    pass
+    active = BooleanProperty(False)
+    storehouse = {"lightbulb": "dialog-information.png"}
+    
+    # New obesity level unlocks new junk! o/
+    assorted = [["lightbulb"]] 
+           
+    def __init__(self, what=None, lvl=None, image = "dialog-information.png", **kwargs):
+        if lvl:
+            what = choice([item for items in self.assorted[:lvl] for item in items ])
+            
+        self.source = self.storehouse.get(what, "dialog-information.png")
+        
+        super(Junk, self).__init__(**kwargs)
+        self.size = (48, 48)
+        self.calories = randint(5, 20)
+        self.bind(active=self.sinking)
+        
+    def sinking(self, instance, value):
+        anim = Animation(y=100, d=5)
+        anim &= Animation(x=self.x + 10, t="in_out_back", d=1) + \
+                Animation(x=self.x - 10, t="in_out_back", d=1) + \
+                Animation(x=self.x + 10, t="in_out_back", d=1) + \
+                Animation(x=self.x, t="in_out_back", d=1)
+        anim.bind(on_complete=self.sunk)    
+        anim.start(self)
+        
+    def sunk(self, instance, value):
+        self.parent.remove_widget(self)

@@ -23,8 +23,8 @@ class Ship(Image):
         self.dispatch("on_start_sailing")
         
         # TODO: more intresting/smooth placing and transition
-        new_fishing_place = randint(40, self.parent.width - 40)
-        anim = Animation(x=new_fishing_place, t="in_out_quad", d=2)
+        new_fishing_place = randint(0, self.parent.width - 40)
+        anim = Animation(center_x=new_fishing_place, t="in_out_quad", d=2)
         
         anim.bind(on_complete= lambda instance, value: self.dispatch("on_stop_sailing"))    
         anim.start(self)
@@ -38,3 +38,4 @@ class Ship(Image):
         
     def on_stop_sailing(self):
         self.state = "fishing"
+

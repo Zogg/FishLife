@@ -1,6 +1,6 @@
 from random import random, randint
 from functools import partial
-import sys
+
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
@@ -53,15 +53,17 @@ class FishLifeBones(App):
         
         restart_button = Button(text="AGAIN!")
         self.victory_screen = Popup(title="Victory!", content=restart_button, auto_dismiss=False, size=(400, 400))
-        restart_button.bind(on_press=self.scene_gameplay)
+        restart_button.bind(on_press=self.restart_game)
         restart_button.bind(on_press=self.victory_screen.dismiss)
         
-
+        self.fish = Fish(box=(self.game_area.x, self.game_area.y + 100, self.game_area.width, self.game_area.height - 175))
+        self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
+        self.fish.bind(calories=self.update_calories_bar)
         
         return self.welcome_screen
         
-    def update_calories_bar(self, instance, value):
-        self.calories_bar.value = value
+    def update_calories_bar(self, instance, new_value):
+        self.calories_bar.value = new_value
         
     def check_for_smthing_to_eat(self, dt):
         to_eat = []
@@ -127,23 +129,10 @@ class FishLifeFlesh(FishLifeBones):
     def scene_gameplay(self, *kwargs):
         self.root.clear_widgets()
         
-        for ship in self.ships:
-            ship.parent.remove_widget(ship)
-        self.ships = []
-        
-        try:
-            self.fish.parent.remove_widget(self.ship)
-        except:
-            pass
-                
         self.manufacture_ships(3)
-        
-        self.fish = Fish(box=(self.game_area.x, self.game_area.y + 100, self.game_area.width, self.game_area.height - 175))
-        self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
-        self.fish.bind(calories=self.update_calories_bar)
-        
+       
         self.root.add_widget(self.game_screen)
-        
+                
         for ship in self.ships:
             self.drop_onto_sea(ship)
         
@@ -162,6 +151,25 @@ class FishLifeFlesh(FishLifeBones):
         Clock.unschedule(self.check_for_smthing_to_eat) 
         
         self.root.add_widget(self.victory_screen)
+        
+    def restart_game(self, *kwargs):
+        self.calories_bar.value = 1000
+        
+        for ship in self.ships:
+            ship.parent.remove_widget(ship)
+        self.ships = []
+        
+        try:
+            self.fish.parent.remove_widget(self.fish)
+            del(self.fish)
+        except:
+            pass
+            
+        self.fish = Fish(box=(self.game_area.x, self.game_area.y + 100, self.game_area.width, self.game_area.height - 175))
+        self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
+        self.fish.bind(calories=self.update_calories_bar)
+        
+        self.scene_gameplay()
         
 if __name__ == '__main__':
     FishLifeFlesh().run()

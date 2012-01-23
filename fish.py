@@ -8,20 +8,18 @@ from kivy.clock import Clock
 from kivy.vector import Vector
 from kivy.properties import BooleanProperty, NumericProperty
 
-class DirectionalImage():
-    pass
-
 class Fish(Scatter):
     active = BooleanProperty(False)
     alive = BooleanProperty(True)
+    
     calories = NumericProperty(1000)
     total_calories = NumericProperty(0)
     obese_lvl = NumericProperty(1)
-    lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060, 1140]
-    calories_consumption = 7
-    box = (0, 0, 100, 100)
     
-    def __init__(self, image = "images/fish.png", box = (), **kwargs):
+    calories_consumption = 7
+    lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060, 1140]
+        
+    def __init__(self, image = "images/fish.png", box = (0, 0, 100, 100), **kwargs):
         self.direction = Vector(-1, 0)
         self.angle = 1
         self.speed = 0
@@ -29,7 +27,6 @@ class Fish(Scatter):
         self.size = (48,48)
         self.box = box
         self.center = (Window.width / 2, Window.height)
-        self.source = image
         self.image = Image(source=image, allow_stretch=True, size=self.size)
         
         # Can't be arsed to 'rotate' texture 'properly', this is so frikin more simple
@@ -47,9 +44,10 @@ class Fish(Scatter):
         # Every living creature consumes own self
         self.bind(active=lambda instance, value: Clock.schedule_interval(instance.consume_calories, 0.5) if value else Clock.unschedule(instance.consume_calories))
         # Dynamic entry
-        self.bind(active=lambda instance, value: Animation(y=Window.height - 400, t="out_back", d=1.2).start(instance))
+        self.bind(active=lambda instance, value: Animation(y=Window.height - 400, t="out_back", d=1.2).start(instance) if value else True)
         # Too many calories make you obese
         self.bind(total_calories=self.lvlup)
+        print "pos: ", self.pos, " self.y: ", self.y,  "window.height: ", Window.height
     
     def eat(self, calories):
         self.calories = self.calories + calories if self.calories + calories <= 1000 else 1000
@@ -57,7 +55,7 @@ class Fish(Scatter):
         if calories > 0:
             self.total_calories += calories
                 
-    def consume_calories(self, *kwargs):
+    def consume_calories(self, *args):
         self.calories -= self.calories_consumption * self.obese_lvl
         if self.calories <= 0:
             self.calories = 0
@@ -87,9 +85,11 @@ class Fish(Scatter):
         self.active = False
             
     def on_touch_down(self, touch):
-        Clock.schedule_interval(self.swim, 0.1)
+        if self.active and self.alive:
+            Clock.schedule_interval(self.swim, 0.1)        
         
     def on_touch_move(self, touch):
+        # Facing to the left will be positive, to right - negative deg values
         angle = self.direction.angle((touch.dsx, touch.dsy))
         self.angle = cos(radians(angle)) * 180
         

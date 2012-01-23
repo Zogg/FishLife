@@ -17,20 +17,27 @@ from kivy.graphics import Color
 from kivy.graphics.vertex_instructions import *
 from kivy.properties import BooleanProperty, StringProperty, NumericProperty
 
+from kivy.lang import Builder
+
 from food import Food, Junk
 from fish import Fish
 from ship import Ship
 
+#Builder.load_file("main.kv")
+
+class FishLifeWidget(Widget):
+    pass
 
 class FishLifeBones(App):
-    def __init__(self, **kwargs):
-        super(FishLifeBones, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(FishLifeBones, self).__init__(*args, **kwargs)
         self.ships = []       
 
     def build_config(self, config):
         config.setdefaults('aquarium', {"waterline":200})
         
     def build(self):
+
         self.welcome_screen = Widget(width=Window.width, height=Window.height)
         begin = Button(text="Feed the Fish!")
         begin.bind(on_release=self.scene_gameplay)
@@ -55,7 +62,7 @@ class FishLifeBones(App):
         self.victory_screen = Popup(title="Victory!", content=restart_button, auto_dismiss=False, size=(400, 400))
         restart_button.bind(on_press=self.restart_game)
         restart_button.bind(on_press=self.victory_screen.dismiss)
-        
+    
         self.fish = Fish(box=(self.game_area.x, self.game_area.y + 100, self.game_area.width, self.game_area.height - 175))
         self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
         self.fish.bind(calories=self.update_calories_bar)
@@ -119,8 +126,8 @@ class FishLifeBones(App):
 
 
 class FishLifeFlesh(FishLifeBones):
-    def __init__(self):
-        super(FishLifeFlesh, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(FishLifeFlesh, self).__init__(*args, **kwargs)
     
     def scene_intro(self, *kwargs):
         self.root.clear_widgets()

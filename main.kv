@@ -1,36 +1,42 @@
 #:kivy 1.0
-
-<Fish>:
-    Image:
-        id: fishy
-        source: "images/fish.png"
-        texture: self.texture    
-
-<FishLifeBones>:
-    fish: fishy
+        
     
-    welcome_screen: welcome_screen
+<FishLifeGame>:
+    horison: 200
+    
     game_screen: game_screen
     
+    game_area: game_area
     waves: waves
     
-    Widget:
-        id: welcome_screen
+    calories_bar: calories_bar
     
-        Button:
-            text: "Feed the fish!"
-            center: root.center_x, self.height / 2
-            on_release: root.scene_gameplay()
-   
     Widget:
         id: game_screen
+        size: root.size
         
+        Widget:
+            id: game_area
+            size: root.size
+            
+            canvas:
+                Color:
+                    rgb: (1,1,1)
+                Rectangle:
+                    source: "images/bg.png"
+                    size: root.size
+        Image:
+            id: waves
+            source: "images/waves.png"
+            size: (game_screen.width, 28)
+            center: (game_screen.width/2, game_screen.top - root.horison + self.height)
+            
         GridLayout:
-            cols: 2
+            cols: 3
             row_force_default: True
             row_default_height: 100
-            width: Window.width
-            height: 100
+            width: root.width
+            height: 70
             pos: (0,0)
             
             Label:
@@ -38,32 +44,58 @@
                 width: 100
             
             ProgressBar:
+                id: calories_bar
                 max: 1000
-                value: 1000
+                value: 1000            
                 
-        Widget:
-            id: game_area
+            Widget:
+                width:30
             
-            canvas:
-                Color(1,1,1)
-                Rectangle:
-                    source: "images/bg.png"
-                    pos: self.pos:
-                    size: self.size
-                    
-        Image:
-            id: waves
-            source: "images/waves.png"
-            pos: (0, game_screen.top - 182)
-            size: (game_screen.width, 28)
-            
-    Widget:
-        id: victory_screen
-        
-        Button:
-            text: "AGAIN!"
-            on_press: root.restart_game() 
-            on_press: self.dismiss()
-            
+<FishLifeScore>:
+    restart_btn: restart_btn
     
+    score_table: score_table
+    calories_score: calories_score
+    junk_score: junk_score
+    total_score: total_score
+    
+    title: "Victory!"
+    auto_dismiss: False
+    size_hint: (None, None)
+    size: (400,400)
+    pos: self.pos
+    
+    
+    GridLayout:
+        id: score_table
+        cols: 2
+        pos: root.pos
+        height:150
+        
+        Label:
+            text: "Total Calories Consumed"
+        Label:
+            text: "Tons of Junk swollen"
+            
+        Label:
+            id: calories_score
+            text: "0"
+        Label:
+            id: junk_score
+            text: "0"       
+    Label:
+        id: total_score
+        pos: root.pos
+        text: "In total fishy made n people happy during life"
+                
+    Button:
+        id: restart_btn
+        text: "AGAIN!"
+        pos: root.pos
+        size_hint: (None, None)
+        size: (root.width, 30)
+
+<FoodScoreFeedback>:
+    font_size: 20
+    font_name: "DejaVuSansMono-Bold.ttf"
 

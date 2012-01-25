@@ -21,9 +21,13 @@ class Fish(Scatter):
     obese_lvl = NumericProperty(1)
     
     # Immutable properties
+    # How many calories will be consumed per second each level
     calories_consumption = [7, 12, 16, 22, 28, 36, 46, 60]
+    # Eat that much calories (in total) and you level up!
     lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060]
+    # Relative size increase upon each lvlup
     size_increment = [1, 1.2, 1.2, 1.2, 1.5, 1.1, 1.1, 1.1]
+    # Every level has a rank!
     rank = ["a fry", "a cat", "a car", "a whale", "a candy store", "an oil tanker", "the Iceland", "the Pacific Ocean itself!", 'the "MAFIAA"']
 
     def __init__(self, image = "images/fish.png", box = [0, 0, 100, 100], **kwargs):

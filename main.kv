@@ -73,6 +73,7 @@
     size_hint: (None, None)
     size: (400,400)
     pos: self.pos
+    id: score_w
     
     
     GridLayout:
@@ -80,7 +81,7 @@
         cols: 2
         size_hint: (1.0, None)
         height:100
-        pos: (root.x, root.height - self.height/2)
+        pos: (root.x, root.top - self.height - 50)
 
         Label:
             text: "Total Calories Consumed"

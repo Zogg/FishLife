@@ -42,7 +42,7 @@ class Food(Image):
         
 class Junk(Image):
     active = BooleanProperty(False)
-    storehouse = {"lightbulb": {"image":"dialog-information.png", "calories": (-10,0)}}
+    storehouse = {"lightbulb": {"image":"dialog-information.png", "calories": (-40,-30)}}
     
     # New obesity level unlocks new junk! o/
     assorted = [["lightbulb"]] 

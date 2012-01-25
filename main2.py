@@ -181,7 +181,3 @@ class FishLifeBones(App):
 if __name__ == '__main__':
     FishLifeBones().run()
     
-"""
-(02:33:19 AM) tito: from kivy.config import Config; Config.set('graphics', 'width', '1280') + same for height
-(02:33:24 AM) tito: before anything
-"""

@@ -20,7 +20,7 @@ class Ship(Image):
         self.register_event_type('on_start_sailing')
         self.register_event_type('on_stop_sailing')
                 
-        self.bind(active=lambda instance, value: Animation(y=Window.height - self.horison, t="out_back", d=1.2).start(instance))
+        self.bind(active=lambda instance, value: Animation(y=Window.height/self.horison - 25, t="out_back", d=1.2).start(instance))
         
     def sail(self):
         self.dispatch("on_start_sailing")

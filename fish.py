@@ -6,21 +6,25 @@ from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.vector import Vector
-from kivy.properties import BooleanProperty, NumericProperty, ListProperty
+from kivy.properties import BooleanProperty, NumericProperty, ListProperty, BoundedNumericProperty
 
 from food import Junk
 
 class Fish(Scatter):
     active = BooleanProperty(False)
     alive = BooleanProperty(True)
+    navigating = BooleanProperty(False)
     box = ListProperty([])
     
     calories = NumericProperty(1000)
     total_calories = NumericProperty(0)
     junk_swallowed = NumericProperty(0)
-    obese_lvl = NumericProperty(1)
+    
+    # Max level 8
+    obese_lvl = BoundedNumericProperty(1, min=0, max=8)
     
     # Immutable properties
+    #
     # How many calories will be consumed per second each level
     calories_consumption = [7, 12, 16, 22, 28, 36, 46, 60]
     # Eat that much calories (in total) and you level up!

@@ -41,6 +41,7 @@
             
             Label:
                 text: "Starvation Meter"
+                color: [0,0,0,1]
                 width: 100
             
             ProgressBar:
@@ -69,24 +70,28 @@
     GridLayout:
         id: score_table
         cols: 2
-        pos: root.pos
-        height:150
-        
+        size_hint: (1.0, None)
+        height:100
+        pos: (root.x, root.height - self.height/2)
+
         Label:
             text: "Total Calories Consumed"
         Label:
-            text: "Tons of Junk swollen"
+            text: "Tons of Junk swallowed"
             
         Label:
             id: calories_score
+            font_size: 20
             text: "0"
         Label:
             id: junk_score
+            font_size: 20
             text: "0"       
     Label:
         id: total_score
         pos: root.pos
-        text: "In total fishy made n people happy during life"
+        text_size: (self.width - 20, None)
+        text: "In total fishy made 0 people happy during life. :("
                 
     Button:
         id: restart_btn

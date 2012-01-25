@@ -6,11 +6,12 @@ from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.vector import Vector
-from kivy.properties import BooleanProperty, NumericProperty
+from kivy.properties import BooleanProperty, NumericProperty, ListProperty
 
 class Fish(Scatter):
     active = BooleanProperty(False)
     alive = BooleanProperty(True)
+    box = ListProperty([])
     
     calories = NumericProperty(1000)
     total_calories = NumericProperty(0)
@@ -18,11 +19,11 @@ class Fish(Scatter):
     
     calories_consumption = 7
     lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060, 1140]
+    ranks = [""]
         
-    def __init__(self, image = "images/fish.png", box = (0, 0, 100, 100), **kwargs):
+    def __init__(self, image = "images/fish.png", box = [0, 0, 100, 100], **kwargs):
         self.direction = Vector(-1, 0)
         self.angle = 1
-        self.speed = 0
         
         self.size = (48,48)
         self.box = box
@@ -47,7 +48,6 @@ class Fish(Scatter):
         self.bind(active=lambda instance, value: Animation(y=Window.height - 400, t="out_back", d=1.2).start(instance) if value else True)
         # Too many calories make you obese
         self.bind(total_calories=self.lvlup)
-        print "pos: ", self.pos, " self.y: ", self.y,  "window.height: ", Window.height
     
     def eat(self, calories):
         self.calories = self.calories + calories if self.calories + calories <= 1000 else 1000
@@ -113,13 +113,13 @@ class Fish(Scatter):
     def on_touch_up(self, touch):
         Clock.unschedule(self.swim)
         
-        self.speed = Vector((0,0)).distance((touch.dsx, touch.dsy)) * 5000
+        speed = Vector((0,0)).distance((touch.dsx, touch.dsy)) * 5000
         
         angle = self.direction.angle((touch.dsx, touch.dsy))
         if angle < 0:
             angle = 360 + angle
         angle = 270 - angle
 
-        anim = Animation(center=(self.target_pos[0] + sin(radians(angle)) * self.speed,self.target_pos[1] - cos(radians(angle)) * self.speed), t="out_cubic", d=0.6)
+        anim = Animation(center=(self.target_pos[0] + sin(radians(angle)) * speed,self.target_pos[1] - cos(radians(angle)) * speed), t="out_cubic", d=0.6)
         anim.start(self)
         

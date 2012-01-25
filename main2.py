@@ -1,5 +1,6 @@
 from random import random, randint
 from functools import partial
+from datetime import datetime
 
 from kivy.app import App
 from kivy.uix.widget import Widget
@@ -15,7 +16,7 @@ from kivy.clock import Clock
 from kivy.clock import _hash
 from kivy.graphics import Color
 from kivy.graphics.vertex_instructions import *
-from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ObjectProperty
+from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
 
 from kivy.lang import Builder
 from kivy.logger import Logger
@@ -24,12 +25,18 @@ from food import Food, Junk, FoodScoreFeedback
 from fish import Fish
 from ship import Ship
 
+
+
+from kivy.config import Config
+
+Config.set('graphics', 'width', '800')
+Config.set('graphics', 'height', '726')
+
 class FishLifeIntro(Widget):
     pass
 
 class FishLifeScore(Popup):
     def __init__(self):
-
         super(FishLifeScore, self).__init__()
         self.pos = (Window.width/2 - self.width/2, Window.height/2 - self.height/2)
         self.content = Widget(pos=self.pos)
@@ -38,9 +45,11 @@ class FishLifeScore(Popup):
         self.content.add_widget(self.restart_btn)
     
 class FishLifeGame(Widget):
+
+    ships = ListProperty([])
+    fish = ObjectProperty(None)
+    
     def __init__(self, *args, **kwargs):
-        self.ships =[]
-        
         self.size = (Window.width, Window.height)
 
         super(FishLifeGame, self).__init__(*args, **kwargs)
@@ -50,7 +59,7 @@ class FishLifeGame(Widget):
         
         self.manufacture_ships(3)
        
-        self.fish = Fish(box=(self.game_area.x, self.game_area.y + 65, self.game_area.width, self.game_area.height - 175))
+        self.fish = Fish(box=[self.game_area.x, self.game_area.y + 65, self.game_area.width, self.game_area.height - 175])
         self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
         self.fish.bind(calories=self.update_calories_bar)  
         self.fish.bind(on_death=self.the_end) 
@@ -75,6 +84,7 @@ class FishLifeGame(Widget):
         self.pause()
         self.victory_screen.calories_score.text = str(self.fish.total_calories)
         self.victory_screen.junk_score.text = str(self.fish.total_calories)
+        self.victory_screen.total_score.text = "On %s a fish was caught, size of a %s, which well fed the people of the world for %s straight days!" % (datetime.now().strftime("%B %d, %Y"), "oil tanker", str(112))
         self.add_widget(self.victory_screen)  
           
     def manufacture_ships(self, count = 1):
@@ -141,6 +151,7 @@ class FishLifeBones(App):
 
     def build_config(self, config):
         config.setdefaults('aquarium', {"waterline":200})
+        #config.setdefaults('graphics', {"width":1280, "height": 726})
         
     def build(self):
         Builder.load_file("intro.kv")
@@ -171,3 +182,8 @@ class FishLifeBones(App):
         
 if __name__ == '__main__':
     FishLifeBones().run()
+    
+"""
+(02:33:19 AM) tito: from kivy.config import Config; Config.set('graphics', 'width', '1280') + same for height
+(02:33:24 AM) tito: before anything
+"""

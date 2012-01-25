@@ -2,18 +2,21 @@ from random import randint
 from kivy.uix.image import Image
 from kivy.animation import Animation
 from kivy.core.window import Window
-from kivy.properties import BooleanProperty, OptionProperty
+from kivy.properties import BooleanProperty, OptionProperty, NumericProperty
 
 class Ship(Image):
     
     active = BooleanProperty(False)
+    horison = NumericProperty(0)
     state = OptionProperty("fishing", options=["fishing", "sailing"])
     
     def __init__(self, image = "images/ship.png", horison = 200, **kwargs):
         self.source = image
         self.horison = horison # Pixels from the top of parent container
+        
         self.size = (292, 190)
         super(Ship, self).__init__(**kwargs)
+        
         self.register_event_type('on_start_sailing')
         self.register_event_type('on_stop_sailing')
                 

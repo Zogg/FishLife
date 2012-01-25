@@ -55,7 +55,7 @@ class Junk(Image):
         
         super(Junk, self).__init__(**kwargs)
         self.size = (48, 48)
-        self.calories = randint(-10, 10)
+        self.calories = randint(-10, 0)
         self.bind(active=self.sinking)
         
     def sinking(self, instance, value):

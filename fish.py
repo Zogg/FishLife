@@ -8,6 +8,8 @@ from kivy.clock import Clock
 from kivy.vector import Vector
 from kivy.properties import BooleanProperty, NumericProperty, ListProperty
 
+from food import Junk
+
 class Fish(Scatter):
     active = BooleanProperty(False)
     alive = BooleanProperty(True)
@@ -15,12 +17,15 @@ class Fish(Scatter):
     
     calories = NumericProperty(1000)
     total_calories = NumericProperty(0)
+    junk_swallowed = NumericProperty(0)
     obese_lvl = NumericProperty(1)
     
-    calories_consumption = 7
-    lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060, 1140]
-    ranks = [""]
-        
+    # Immutable properties
+    calories_consumption = [7, 12, 16, 22, 28, 36, 46, 60]
+    lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060]
+    size_increment = [1, 1.2, 1.2, 1.2, 1.5, 1.1, 1.1, 1.1]
+    rank = ["a fry", "a cat", "a car", "a whale", "a candy store", "an oil tanker", "the Iceland", "the Pacific Ocean itself!", 'the "MAFIAA"']
+
     def __init__(self, image = "images/fish.png", box = [0, 0, 100, 100], **kwargs):
         self.direction = Vector(-1, 0)
         self.angle = 1
@@ -49,14 +54,17 @@ class Fish(Scatter):
         # Too many calories make you obese
         self.bind(total_calories=self.lvlup)
     
-    def eat(self, calories):
-        self.calories = self.calories + calories if self.calories + calories <= 1000 else 1000
+    def eat(self, stuff):
+        self.calories = self.calories + stuff.calories if self.calories + stuff.calories <= 1000 else 1000
         # Scrap food does not count into total calories
-        if calories > 0:
-            self.total_calories += calories
+        if stuff.calories > 0:
+            self.total_calories += stuff.calories
+        
+        if isinstance(stuff, Junk):
+            self.junk_swallowed += 1
                 
     def consume_calories(self, *args):
-        self.calories -= self.calories_consumption * self.obese_lvl
+        self.calories -= self.calories_consumption[self.obese_lvl-1]
         if self.calories <= 0:
             self.calories = 0
             self.dispatch("on_death")
@@ -66,7 +74,8 @@ class Fish(Scatter):
             #TODO: will there be lvl limit?
             if self.total_calories >= self.lvlup_on_calories[self.obese_lvl]:
                 self.obese_lvl += 1
-                self.image.size = (self.image.width + self.image.width * (1.0 / self.obese_lvl), self.image.height + self.image.height * (1.0 / self.obese_lvl))
+                print self.obese_lvl
+                self.image.size = (self.image.width * self.size_increment[self.obese_lvl-1], self.image.height * self.size_increment[self.obese_lvl-1])
                 self.size = self.image.size
         except:
             pass
@@ -85,8 +94,12 @@ class Fish(Scatter):
         self.active = False
             
     def on_touch_down(self, touch):
+        if not self.collide_point(touch.x, touch.y):
+            return False
+            
         if self.active and self.alive:
-            Clock.schedule_interval(self.swim, 0.1)        
+            Clock.schedule_interval(self.swim, 0.1)  
+            self.navigating = True      
         
     def on_touch_move(self, touch):
         # Facing to the left will be positive, to right - negative deg values
@@ -111,6 +124,11 @@ class Fish(Scatter):
         self.target_pos = (x, y)
         
     def on_touch_up(self, touch):
+        if not self.navigating:
+            return False
+        
+        self.navigating = False
+        
         Clock.unschedule(self.swim)
         
         speed = Vector((0,0)).distance((touch.dsx, touch.dsy)) * 5000

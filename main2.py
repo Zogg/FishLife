@@ -26,12 +26,6 @@ from fish import Fish
 from ship import Ship
 
 
-
-from kivy.config import Config
-
-Config.set('graphics', 'width', '800')
-Config.set('graphics', 'height', '726')
-
 class FishLifeIntro(Widget):
     pass
 
@@ -49,11 +43,13 @@ class FishLifeGame(Widget):
     ships = ListProperty([])
     fish = ObjectProperty(None)
     
+    start_time = ObjectProperty(None)
+    
     def __init__(self, *args, **kwargs):
         self.size = (Window.width, Window.height)
 
         super(FishLifeGame, self).__init__(*args, **kwargs)
-        self.waves.texture = self.waves.texture.get_region(0,0, self.game_screen.width, self.waves.height)
+        #self.waves.texture = self.waves.texture.get_region(0,0, self.game_screen.width, self.waves.height)
         
         self.victory_screen = FishLifeScore()
         
@@ -73,7 +69,9 @@ class FishLifeGame(Widget):
         
         Clock.schedule_interval(self.drop_food, 2)
         Clock.schedule_interval(self.sail_ships, 5)
-        Clock.schedule_interval(self.check_for_smthing_to_eat, 0.4) 
+        Clock.schedule_interval(self.check_for_smthing_to_eat, 0.4)
+        
+        self.start_time = datetime.now() 
         
     def pause(self):
         Clock.unschedule(self.drop_food)
@@ -83,8 +81,8 @@ class FishLifeGame(Widget):
     def the_end(self, instance):
         self.pause()
         self.victory_screen.calories_score.text = str(self.fish.total_calories)
-        self.victory_screen.junk_score.text = str(self.fish.total_calories)
-        self.victory_screen.total_score.text = "On %s a fish was caught, size of a %s, which well fed the people of the world for %s straight days!" % (datetime.now().strftime("%B %d, %Y"), "oil tanker", str(112))
+        self.victory_screen.junk_score.text = str(self.fish.junk_swallowed)
+        self.victory_screen.total_score.text = "On %s a fish was caught, size of %s, which well fed the people of the world for %s days straight!" % (datetime.now().strftime("%B %d, %Y"), self.fish.rank[self.fish.obese_lvl - 1], (datetime.now() - self.start_time).seconds )
         self.add_widget(self.victory_screen)  
           
     def manufacture_ships(self, count = 1):
@@ -119,7 +117,7 @@ class FishLifeGame(Widget):
             self.game_area.remove_widget(shit)
             self.game_area.add_widget(FoodScoreFeedback(calories=shit.calories, center=shit.center))
             
-            self.fish.eat(shit.calories)
+            self.fish.eat(shit)
         
     def drop_food(self, td):
         """Periodicaly drop food from the ships"""

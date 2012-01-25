@@ -25,11 +25,19 @@
                 Rectangle:
                     source: "images/bg.png"
                     size: root.size
-        Image:
+        Widget:
             id: waves
-            source: "images/waves.png"
-            size: (game_screen.width, 28)
-            center: (game_screen.width/2, game_screen.top - root.horison + self.height)
+            size: (root.width, 28)
+            
+            canvas:
+                Color:
+                    rgb: (1, 1, 1)
+                Rectangle:
+                    source: "images/waves.png"
+                    size: self.size
+                    pos: self.pos
+            
+            center: (game_screen.width/2, game_screen.top - root.horison + self.height + 4)
             
         GridLayout:
             cols: 3
@@ -89,7 +97,7 @@
             text: "0"       
     Label:
         id: total_score
-        pos: root.pos
+        pos: (root.x + 5, root.y)
         text_size: (self.width - 20, None)
         text: "In total fishy made 0 people happy during life. :("
                 

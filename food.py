@@ -42,10 +42,12 @@ class Food(Image):
         
 class Junk(Image):
     active = BooleanProperty(False)
-    storehouse = {"lightbulb": {"image":"dialog-information.png", "calories": (-40,-30)}}
+    storehouse = {"lightbulb": {"image":"dialog-information.png", "calories": (-40,-30)},
+                  "oil_drop": {"image":"images/oil_drop.png", "calories": (-500,-500), "speed_mod": 2},
+                 }
     
     # New obesity level unlocks new junk! o/
-    assorted = [["lightbulb"]] 
+    assorted = [["lightbulb", "oil_drop"]] 
            
     def __init__(self, what=None, lvl=None, image="dialog-information.png", **kwargs):
         if lvl:
@@ -60,10 +62,11 @@ class Junk(Image):
         super(Junk, self).__init__(**kwargs)
         self.size = (48, 48)
         self.calories = randint(*self.storehouse[what]["calories"])
+        self.speed_mod = self.storehouse[what].get("speed_mod", 1)
         self.bind(active=self.sinking)
         
     def sinking(self, instance, value):
-        anim = Animation(y=33, d=6)
+        anim = Animation(y=33, d=6 * self.speed_mod)
         anim &= Animation(x=self.x + 10, t="in_out_back", d=1) + \
                 Animation(x=self.x - 10, t="in_out_back", d=1) + \
                 Animation(x=self.x + 10, t="in_out_back", d=1) + \

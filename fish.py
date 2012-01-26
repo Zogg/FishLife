@@ -16,7 +16,7 @@ class Fish(Scatter):
     navigating = BooleanProperty(False)
     box = ListProperty([])
     
-    calories = NumericProperty(1000)
+    calories = BoundedNumericProperty(1000, min=0, max=1000)
     total_calories = NumericProperty(0)
     junk_swallowed = NumericProperty(0)
     
@@ -63,7 +63,12 @@ class Fish(Scatter):
         self.bind(total_calories=self.lvlup)
     
     def eat(self, stuff):
-        self.calories = self.calories + stuff.calories if self.calories + stuff.calories <= 1000 else 1000
+        try:
+            self.calories = self.calories + stuff.calories if self.calories + stuff.calories <= 1000 else 1000
+        except:
+            self.calories = 0
+            self.dispatch("on_death")
+            
         # Scrap food does not count into total calories
         if stuff.calories > 0:
             self.total_calories += stuff.calories

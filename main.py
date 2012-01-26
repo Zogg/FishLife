@@ -1,5 +1,6 @@
 from random import random, randint
 from functools import partial
+from datetime import datetime
 
 from kivy.app import App
 from kivy.uix.widget import Widget
@@ -15,75 +16,108 @@ from kivy.clock import Clock
 from kivy.clock import _hash
 from kivy.graphics import Color
 from kivy.graphics.vertex_instructions import *
-from kivy.properties import BooleanProperty, StringProperty, NumericProperty
+from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
 
 from kivy.lang import Builder
+from kivy.logger import Logger
 
-from food import Food, Junk
+from food import Food, Junk, FoodScoreFeedback
 from fish import Fish
 from ship import Ship
 
-#Builder.load_file("main.kv")
 
-class FishLifeWidget(Widget):
+class FishLifeIntro(Widget):
     pass
 
-class FishLifeBones(App):
-    def __init__(self, *args, **kwargs):
-        super(FishLifeBones, self).__init__(*args, **kwargs)
-        self.ships = []       
-
-    def build_config(self, config):
-        config.setdefaults('aquarium', {"waterline":200})
-        
-    def build(self):
-
-        self.welcome_screen = Widget(width=Window.width, height=Window.height)
-        begin = Button(text="Feed the Fish!")
-        begin.bind(on_release=self.scene_gameplay)
-        self.welcome_screen.add_widget(begin)
-        
-        self.game_screen = Widget(width=Window.width, height=Window.height)
-        self.menu = GridLayout(cols=2, row_force_default=True, row_default_height=100, width=Window.width, height=100, pos=(0,0))
-        self.menu.add_widget(Label(text="Starvation Meter", width=100))
-        self.calories_bar = ProgressBar(max=1000, value=1000)
-        self.menu.add_widget(self.calories_bar)
-        self.game_area = Widget(width=Window.width, height=Window.height)
-        with self.game_area.canvas:
-            Color(1,1,1)
-            Rectangle(source="images/bg.png", pos=self.game_area.pos, size=self.game_area.size)
-        self.waves = Image(source="images/waves.png", pos=(0, self.game_screen.top - 182), size=(self.game_screen.width, 28))
-        self.waves.texture = self.waves.texture.get_region(0,0, self.game_screen.width, self.waves.height)
-        self.game_screen.add_widget(self.game_area)
-        self.game_screen.add_widget(self.waves)
-        self.game_screen.add_widget(self.menu)
-        
-        restart_button = Button(text="AGAIN!")
-        self.victory_screen = Popup(title="Victory!", content=restart_button, auto_dismiss=False, size=(400, 400))
-        restart_button.bind(on_press=self.restart_game)
-        restart_button.bind(on_press=self.victory_screen.dismiss)
+class FishLifeScore(Popup):
+    def __init__(self):
+        super(FishLifeScore, self).__init__()
+        self.pos = (Window.width/2 - self.width/2, Window.height/2 - self.height/2)
+        self.content = Widget(pos=self.pos)
+        self.content.add_widget(self.score_table)
+        self.content.add_widget(self.total_score)
+        self.content.add_widget(self.restart_btn)
     
-        self.fish = Fish(box=(self.game_area.x, self.game_area.y + 100, self.game_area.width, self.game_area.height - 175))
+class FishLifeGame(Widget):
+
+    ships = ListProperty([])
+    fish = ObjectProperty(None)
+    
+    start_time = ObjectProperty(None)
+    
+    def __init__(self, *args, **kwargs):
+        self.size = (Window.width, Window.height)
+
+        super(FishLifeGame, self).__init__(*args, **kwargs)
+        #self.waves.texture = self.waves.texture.get_region(0,0, self.game_screen.width, self.waves.height)
+        
+        self.victory_screen = FishLifeScore()
+        
+        self.manufacture_ships(3)
+       
+        self.fish = Fish(box=[self.game_area.x, self.game_area.y + 65, self.game_area.width, self.game_area.height - 175])
         self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
-        self.fish.bind(calories=self.update_calories_bar)
+        self.fish.bind(calories=self.update_calories_bar)  
+        self.fish.bind(on_death=self.the_end) 
+
+    def play(self):
+        for ship in self.ships:
+            self.drop_ship_onto_sea(ship)
+    
+        self.game_area.add_widget(self.fish, index=1)
+        self.fish.active = True
         
-        return self.welcome_screen
+        Clock.schedule_interval(self.drop_food, 2)
+        Clock.schedule_interval(self.sail_ships, 5)
+        Clock.schedule_interval(self.check_for_smthing_to_eat, 0.4)
         
-    def update_calories_bar(self, instance, new_value):
-        self.calories_bar.value = new_value
+        self.start_time = datetime.now() 
         
+    def pause(self):
+        Clock.unschedule(self.drop_food)
+        Clock.unschedule(self.sail_ships)
+        Clock.unschedule(self.check_for_smthing_to_eat) 
+        
+    def the_end(self, instance):
+        self.pause()
+        self.victory_screen.calories_score.text = str(self.fish.total_calories)
+        self.victory_screen.junk_score.text = str(self.fish.junk_swallowed)
+        self.victory_screen.total_score.text = "On %s a fish was caught, size of %s, which well fed the people of the world for %s days straight!" % (datetime.now().strftime("%B %d, %Y"), self.fish.rank[self.fish.obese_lvl - 1], (datetime.now() - self.start_time).seconds )
+        self.add_widget(self.victory_screen)  
+          
+    def manufacture_ships(self, count = 1):
+        for n in range(0, count):
+            ship = Ship(horison=self.horison)
+            self.ships.append(ship)
+            
+        # *cough*workaround*cough* bind on first ship
+        self.ships[0].bind(on_start_sailing=lambda instance: Clock.schedule_interval(self.drop_junk, 0.4))
+        self.ships[0].bind(on_stop_sailing=lambda instance: Clock.unschedule(self.drop_junk))      
+        
+    def drop_ship_onto_sea(self, ship):
+        try:
+            if not ship:
+                ship = self.ships.pop()
+            self.game_area.add_widget(ship)
+
+            ship.center_x = randint(0, Window.width - ship.width/4)
+            ship.y = self.game_area.height
+            ship.active = True
+        except IndexError:
+            Logger.debug("No ships left in dock.")   
+            
     def check_for_smthing_to_eat(self, dt):
         to_eat = []
         for stuff in self.game_area.children:
             if stuff.collide_widget(self.fish):
-                if isinstance(stuff, Food):
+                if isinstance(stuff, Food) or isinstance(stuff, Junk):
                     to_eat.append(stuff)
                 
         for shit in to_eat:
             self.game_area.remove_widget(shit)
-            self.fish.eat(shit.calories)
-            print "eaten! ", self.fish.calories
-            del(shit)
+            self.game_area.add_widget(FoodScoreFeedback(calories=shit.calories, center=shit.center))
+            
+            self.fish.eat(shit)
         
     def drop_food(self, td):
         """Periodicaly drop food from the ships"""
@@ -95,7 +129,7 @@ class FishLifeBones(App):
                  food.active = True
             Clock.schedule_once(partial(really_drop_food, food), random() * 2)
     
-    def drop_junk(self, ship, *wtf):
+    def drop_junk(self, *args):
         for ship in self.ships:
             junk = Junk(lvl=self.fish.obese_lvl, x = ship.center_x + randint(-50,50), y = ship.y + randint(-5,5))
             self.game_area.add_widget(junk)
@@ -103,80 +137,52 @@ class FishLifeBones(App):
         
     def sail_ships(self, timer):
         for ship in self.ships:
-            ship.sail()
-            
-    def manufacture_ships(self, count = 1):
-        for n in range(0, count):
-            ship = Ship()
-            self.ships.append(ship)
-            
-        # *cough*workaround*cough*
-        self.ships[0].bind(on_start_sailing=lambda instance: Clock.schedule_interval(self.drop_junk, 0.4))
-        self.ships[0].bind(on_stop_sailing=lambda instance: Clock.unschedule(self.drop_junk))
-            
-    def drop_onto_sea(self, ship):
-        try:
-            if not ship:
-                ship = self.ships.pop()
-            self.game_area.add_widget(ship)
-            ship.pos = (randint(20, Window.width - 20), ship.parent.height)
-            ship.active = True
-        except IndexError:
-            obj.text = "No more ships left!"
+            ship.sail()        
+
+    def update_calories_bar(self, instance, new_value):
+        self.calories_bar.value = new_value        
 
 
-class FishLifeFlesh(FishLifeBones):
+class FishLifeBones(App):
     def __init__(self, *args, **kwargs):
-        super(FishLifeFlesh, self).__init__(*args, **kwargs)
-    
-    def scene_intro(self, *kwargs):
-        self.root.clear_widgets()
-        self.root.add_widget(self.welcome_screen)
+        super(FishLifeBones, self).__init__(*args, **kwargs)
+
+    def build_config(self, config):
+        config.setdefaults('aquarium', {"waterline":200})
+        #config.setdefaults('graphics', {"width":1280, "height": 726})
         
-    def scene_gameplay(self, *kwargs):
-        self.root.clear_widgets()
+    def build(self):
+        Builder.load_file("intro.kv")
+        self.intro = FishLifeIntro()
+        self.intro.go_btn.bind(on_release=self.begin_game)
+        return self.intro
         
-        self.manufacture_ships(3)
-       
-        self.root.add_widget(self.game_screen)
-                
-        for ship in self.ships:
-            self.drop_onto_sea(ship)
-        
-        self.game_area.add_widget(self.fish)
-        self.fish.active = True
-        
-        Clock.schedule_interval(self.drop_food, 2)
-        Clock.schedule_interval(self.sail_ships, 5)
-        Clock.schedule_interval(self.check_for_smthing_to_eat, 0.4) 
-        
-        self.fish.bind(on_death=self.scene_victory) 
-        
-    def scene_victory(self, instance):
-        Clock.unschedule(self.drop_food)
-        Clock.unschedule(self.sail_ships)
-        Clock.unschedule(self.check_for_smthing_to_eat) 
-        
-        self.root.add_widget(self.victory_screen)
-        
-    def restart_game(self, *kwargs):
-        self.calories_bar.value = 1000
-        
-        for ship in self.ships:
-            ship.parent.remove_widget(ship)
-        self.ships = []
+    def begin_game(self, *args):
+        Builder.load_file("main.kv")
+        self.root = self.fishlife = FishLifeGame()
+        self.fishlife.victory_screen.restart_btn.bind(on_press=self.restart_game)
         
         try:
-            self.fish.parent.remove_widget(self.fish)
-            del(self.fish)
+            Window.remove_widget(self.intro)
         except:
             pass
             
-        self.fish = Fish(box=(self.game_area.x, self.game_area.y + 100, self.game_area.width, self.game_area.height - 175))
-        self.fish.bind(pos=lambda instance, value: self.check_for_smthing_to_eat(value))
-        self.fish.bind(calories=self.update_calories_bar)
+        Window.add_widget(self.root)
+        self.root.play()
+              
+    def restart_game(self, *args):
+        self.fishlife.victory_screen.restart_btn.unbind(on_press=self.restart_game)
+        Window.remove_widget(self.fishlife)
         
-        self.scene_gameplay()
+        # Because widgets later on disappear. Why? Dunno, maybe garbage
+        # collector does it's work?
+        # Thus, unload and then load the rules again, and now widgets do not
+        # disappear.
+        Builder.unload_file("main.kv")
+        self.begin_game()
+        
+   
         
 if __name__ == '__main__':
-    FishLifeFlesh().run()
+    FishLifeBones().run()
+    

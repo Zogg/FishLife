@@ -1,0 +1,16 @@
+#:kivy 1.0
+
+<FishLifeIntro>:
+    go_btn: button
+    
+    canvas:
+        Color:
+            rgb: (1,1,1)
+        Rectangle:
+            source: "images/bg.png"
+            size: self.size
+    
+    Button:
+        id: button
+        text: "Feed the fish!"
+        center: root.center_x, self.height / 2

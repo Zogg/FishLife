@@ -1,4 +1,6 @@
 from random import randint, choice
+from functools import partial
+
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.animation import Animation
@@ -48,12 +50,12 @@ class Junk(Image):
                   "oil_drop": {"image":"images/oil_drop.png", "calories": (-500,-500), "speed_mod": 2.5},
                   "death_fork": {"image":"images/death_fork.png", "calories": (-150,-80)},
                   "simple_fork": {"image":"images/plain_fork.png", "calories": (-50,-25)},
-                  "salad_fork": {"image":"images/salad_fork.png", "calories": (25,50)},
+                  "salad_fork": {"image":"images/salad_fork.png", "calories": (25,50), "speed_mod": 1.7},
                   "simple_boot": {"image":"images/simple_boot.png", "calories": (-60,-30)},
                   "black_boot": {"image":"images/black_boot.png", "calories": (-80,-40)},
                   "mech_screw": {"image":"images/mech_screw.png", "calories": (-40,-30)},
                   "oily_mech_screw": {"image":"images/oily_mech_screw.png", "calories": (-160,-100)},
-                  "candy_mech_screw": {"image":"images/candy_mech_screw.png", "calories": (50,100)},
+                  "candy_mech_screw": {"image":"images/candy_mech_screw.png", "calories": (50,100), "speed_mod": 1.7},
                  }
     
     # New obesity level unlocks new junk! o/
@@ -81,7 +83,7 @@ class Junk(Image):
         self.calories = randint(*self.storehouse[what]["calories"])
         self.speed_mod = self.storehouse[what].get("speed_mod", 1)
         self.bind(active=self.sinking)
-        self.bind(parent=lambda instance, value: instance.animation.unbind(on_complete=instance.sunk) if not value else False)
+        self.bind(parent=lambda instance, value: instance.animation.unbind(on_complete=self.sunk) if not value else False)
         
     def sinking(self, instance, value):
         self.animation = Animation(y=33, d=6 * self.speed_mod)
@@ -89,12 +91,18 @@ class Junk(Image):
                 Animation(x=self.x - 10, t="in_out_back", d=1) + \
                 Animation(x=self.x + 10, t="in_out_back", d=1) + \
                 Animation(x=self.x, t="in_out_back", d=1)
-        self.animation.bind(on_complete=self.sunk)    
+        self.animation.bind(on_complete=self.sunk)   # Because trash stay on the floor for some time 
         self.animation.start(self)
         
-    def sunk(self, instance, value):
-        self.parent.remove_widget(self)
-        
+    def sunk(self, *args):
+        Clock.schedule_once(self._remove_myself, 5)
+            
+    def _remove_myself(self, *args):
+        try:
+            self.parent.remove_widget(self)
+        except:
+            pass
+            
 class FoodScoreFeedback(Label):
     def __init__(self, **kwargs):
         score = int(kwargs.get("calories", 0))

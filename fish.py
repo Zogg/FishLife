@@ -28,7 +28,7 @@ class Fish(Scatter):
     # How many calories will be consumed per second each level
     calories_consumption = [7, 12, 16, 22, 28, 36, 46, 60]
     # Eat that much calories (in total) and you level up!
-    lvlup_on_calories = [150, 250, 400, 570, 700, 880, 980, 1060]
+    lvlup_on_calories = [150, 350, 550, 800, 1000, 1300, 1600, 1900]
     # Relative size increase upon each lvlup
     size_increment = [1, 1.2, 1.2, 1.2, 1.5, 1.1, 1.1, 1.1]
     # Every level has a rank!
@@ -115,6 +115,9 @@ class Fish(Scatter):
             self.navigating = True      
         
     def on_touch_move(self, touch):
+        if not self.alive:
+            return False
+            
         # Facing to the left will be positive, to right - negative deg values
         angle = self.direction.angle((touch.dsx, touch.dsy))
         self.angle = cos(radians(angle)) * 180

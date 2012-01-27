@@ -43,11 +43,26 @@ class Food(Image):
 class Junk(Image):
     active = BooleanProperty(False)
     storehouse = {"lightbulb": {"image":"dialog-information.png", "calories": (-40,-30)},
-                  "oil_drop": {"image":"images/oil_drop.png", "calories": (-500,-500), "speed_mod": 2},
+                  "oil_drop": {"image":"images/oil_drop.png", "calories": (-500,-500), "speed_mod": 2.5},
+                  "death_fork": {"image":"images/death_fork.png", "calories": (-150,-80)},
+                  "simple_fork": {"image":"images/plain_fork.png", "calories": (-50,-25)},
+                  "salad_fork": {"image":"images/salad_fork.png", "calories": (25,50)},
+                  "simple_boot": {"image":"images/simple_boot.png", "calories": (-60,-30)},
+                  "black_boot": {"image":"images/black_boot.png", "calories": (-80,-40)},
+                  "mech_screw": {"image":"images/mech_screw.png", "calories": (-40,-30)},
+                  "oily_mech_screw": {"image":"images/oily_mech_screw.png", "calories": (-160,-100)},
+                  "candy_mech_screw": {"image":"images/candy_mech_screw.png", "calories": (50,100)},
                  }
     
     # New obesity level unlocks new junk! o/
-    assorted = [["lightbulb", "oil_drop"]] 
+    assorted = [["mech_screw", "simple_fork"], 
+                ["simple_boot"], 
+                ["black_boot", "salad_fork"], 
+                ["oily_mech_screw", "salad_fork"], 
+                ["death_fork", "salad_fork"],
+                ["candy_mech_screw", "oily_mech_screw"],
+                ["oil_drop", "candy_mech_screw"],
+                ["oil_drop"]] 
            
     def __init__(self, what=None, lvl=None, image="dialog-information.png", **kwargs):
         if lvl:

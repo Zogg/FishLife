@@ -28,9 +28,9 @@ class Fish(Scatter):
     # How many calories will be consumed per second each level
     calories_consumption = [7, 12, 16, 22, 28, 36, 46, 60]
     # Eat that much calories (in total) and you level up!
-    lvlup_on_calories = [150, 350, 550, 800, 1000, 1300, 1600, 1900]
+    lvlup_on_calories = [150, 350, 550, 900, 1300, 1700, 2000, 2300]
     # Relative size increase upon each lvlup
-    size_increment = [1, 1.2, 1.2, 1.2, 1.5, 1.1, 1.1, 1.1]
+    size_increment = [1, 1.2, 1.2, 1.2, 1.4, 1.1, 1.1, 1.1]
     # Every level has a rank!
     rank = ["a fry", "a cat", "a car", "a whale", "a candy store", "an oil tanker", "the Iceland", "the Pacific Ocean itself!", 'the "MAFIAA"']
 
@@ -44,8 +44,8 @@ class Fish(Scatter):
         self.image = Image(source=image, allow_stretch=True, size=self.size)
         
         # Can't be arsed to 'rotate' texture 'properly', this is so frikin more simple
-        self.texture_left = self.image.texture.get_region(0, 0, 192, 188)
-        self.texture_right = self.image.texture.get_region(207, 0, 192, 188)
+        self.texture_left = self.image.texture.get_region(0, 0, 194, 192)
+        self.texture_right = self.image.texture.get_region(205, 0, 194, 192)
         self.image.texture = self.texture_left
         
         self.target_pos = self.center
@@ -77,8 +77,9 @@ class Fish(Scatter):
             self.junk_swallowed += 1
                 
     def consume_calories(self, *args):
-        self.calories -= self.calories_consumption[self.obese_lvl-1]
-        if self.calories <= 0:
+        try:
+            self.calories -= self.calories_consumption[self.obese_lvl-1]
+        except:
             self.calories = 0
             self.dispatch("on_death")
     

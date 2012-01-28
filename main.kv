@@ -47,10 +47,8 @@
             height: 70
             pos: (0,0)
             
-            Label:
-                text: "Starvation Meter"
-                color: [0,0,0,1]
-                width: 100
+            Widget:
+                width: 30
             
             ProgressBar:
                 id: calories_bar
@@ -58,7 +56,13 @@
                 value: 1000            
                 
             Widget:
-                width:30
+                width: 30
+        
+        Label:
+            text: "Starvation Meter"
+            color: [1,1,1,1]
+            width: 100
+            center: calories_bar.center
             
 <FishLifeScore>:
     restart_btn: restart_btn

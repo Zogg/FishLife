@@ -218,8 +218,8 @@ class ScreenFader(Widget):
         self.alpha = alpha
             
     def on_alpha(self, instance, value):
-        # I know this is inefficient. Tried other ways, didnt work. Stuck with
-        # this.
+        # Probably there is more efficient approach. Tried other ways, 
+        # didnt work. Stuck with this.
         self.canvas.clear()
         with self.canvas:
             Color(0,0,0, value)

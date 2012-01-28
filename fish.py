@@ -26,9 +26,9 @@ class Fish(Scatter):
     # Immutable properties
     #
     # How many calories will be consumed per second each level
-    calories_consumption = [7, 12, 16, 22, 28, 36, 46, 60]
+    calories_consumption = [7, 16, 20, 29, 32, 35, 40, 50]
     # Eat that much calories (in total) and you level up!
-    lvlup_on_calories = [150, 350, 550, 900, 1300, 1700, 2000, 2300]
+    lvlup_on_calories = [150, 350, 550, 900, 1400, 2100, 3000, 4100]
     # Relative size increase upon each lvlup
     size_increment = [1, 1.2, 1.2, 1.2, 1.4, 1.1, 1.1, 1.1]
     # Every level has a rank!

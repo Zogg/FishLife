@@ -12,12 +12,12 @@ class Food(Image):
     storehouse = {"lightbulb": "dialog-information.png",
                   "cucumber": {"image":"images/cucumber.png", "calories": (5,15)},
                   "apple": {"image":"images/apple.png", "calories": (15,20)},
-                  "banana": {"image":"images/banana.png", "calories": (5,35)},
-                  "meat": {"image":"images/meat.png", "calories": (35,45)},
-                  "bottle": {"image":"images/bottle.png", "calories": (0,40)}}
+                  "banana": {"image":"images/banana.png", "calories": (10,35)},
+                  "meat": {"image":"images/meat.png", "calories": (35,55)},
+                  "bottle": {"image":"images/bottle.png", "calories": (0,60)}}
 
     # New obesity level unlocks new food! \o
-    assorted = [["cucumber"],["apple"], ["banana", "bottle"], ["meat"]] 
+    assorted = [["cucumber"],["apple"], ["banana"], ["meat"], ["bottle"]] 
 
     def __init__(self, what=None, lvl=None, image = "dialog-information.png", **kwargs):
         if lvl:

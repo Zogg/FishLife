@@ -14,12 +14,17 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.clock import _hash
+from kivy.animation import Animation
 from kivy.graphics import Color
 from kivy.graphics.vertex_instructions import *
 from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
 
 from kivy.lang import Builder
 from kivy.logger import Logger
+
+# Thanks to tshirtman for showing me this, and tito for 
+# actually writing the code ;)
+from alpha_widget import AlphableWidget
 
 from food import Food, Junk, FoodScoreFeedback
 from fish import Fish
@@ -60,7 +65,7 @@ class FishLifeGame(Widget):
         self.fish.bind(calories=self.update_calories_bar)  
         self.fish.bind(on_death=self.the_end) 
 
-    def play(self):
+    def play(self, *largs):
         for ship in self.ships:
             self.drop_ship_onto_sea(ship)
     
@@ -154,10 +159,10 @@ class FishLifeBones(App):
     def build(self):
         Builder.load_file("intro.kv")
         self.intro = FishLifeIntro()
-        self.intro.go_btn.bind(on_release=self.begin_game)
+        self.intro.go_btn.bind(on_release=self._transition_outof_intro)
         return self.intro
         
-    def begin_game(self, *args):
+    def begin_game(self, *largs, **kwargs):
         Builder.load_file("main.kv")
         self.root = self.fishlife = FishLifeGame()
         self.fishlife.victory_screen.restart_btn.bind(on_press=self.restart_game)
@@ -168,7 +173,18 @@ class FishLifeBones(App):
             pass
             
         Window.add_widget(self.root)
-        self.root.play()
+        
+        # Fade in
+        Window.remove_widget(self.fader)
+        Window.add_widget(self.fader)
+        anim = Animation(alpha = 0.0, d=0.8)
+        anim.bind(on_complete=lambda instance, value: Window.remove_widget(self.fader))
+        anim.start(self.fader)
+        
+        if not kwargs.get("restart", False):
+            Clock.schedule_once(self.root.play, 0.85)
+        else:
+            self.root.play()
               
     def restart_game(self, *args):
         self.fishlife.victory_screen.restart_btn.unbind(on_press=self.restart_game)
@@ -179,10 +195,37 @@ class FishLifeBones(App):
         # Thus, unload and then load the rules again, and now widgets do not
         # disappear.
         Builder.unload_file("main.kv")
-        self.begin_game()
+        self.begin_game(restart=True)
         
-   
+    def _transition_outof_intro(self, *args):
+        # Fade out
+        self.fader = ScreenFader(size=Window.size)
+        Window.add_widget(self.fader)
+        anim = Animation(alpha = 1.0, d=0.6)
+        anim.bind(on_complete=self.begin_game)
+        anim.start(self.fader)
         
+    def _transition_into_game(self):
+        pass
+
+class ScreenFader(Widget):
+
+    alpha = NumericProperty(0.0)
+    
+    def __init__(self, alpha=0, **kwargs):
+        super(ScreenFader, self).__init__(**kwargs)
+        self.bind(alpha=self.on_alpha)
+        self.alpha = alpha
+            
+    def on_alpha(self, instance, value):
+        # I know this is inefficient. Tried other ways, didnt work. Stuck with
+        # this.
+        self.canvas.clear()
+        with self.canvas:
+            Color(0,0,0, value)
+            Rectangle(pos=self.pos, size=self.size)
+            
+            
 if __name__ == '__main__':
     FishLifeBones().run()
     

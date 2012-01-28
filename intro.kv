@@ -2,6 +2,7 @@
 
 <FishLifeIntro>:
     go_btn: button
+    help_btn: help
     
     canvas:
         Color:
@@ -9,6 +10,11 @@
         Rectangle:
             source: "images/welcome.png"
             size: self.size
+    
+    Button:
+        id: help
+        text: "HowToPlay"
+        center: root.center_x, root.height / 2
     
     Button:
         id: button

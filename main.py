@@ -22,10 +22,6 @@ from kivy.properties import BooleanProperty, StringProperty, NumericProperty, Li
 from kivy.lang import Builder
 from kivy.logger import Logger
 
-# Thanks to tshirtman for showing me this, and tito for 
-# actually writing the code ;)
-from alpha_widget import AlphableWidget
-
 from food import Food, Junk, FoodScoreFeedback
 from fish import Fish
 from ship import Ship

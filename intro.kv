@@ -11,12 +11,16 @@
             source: "images/welcome.png"
             size: self.size
     
-    Button:
-        id: help
-        text: "HowToPlay"
-        center: root.center_x, root.height / 2
-    
-    Button:
-        id: button
-        text: "Feed the fish!"
-        center: root.center_x, self.height / 2
+    BoxLayout:
+        spacing: 10
+        orientation: 'vertical'
+        center: root.center_x, self.height / 2 + 20
+        
+        Button:
+            id: help
+            text: "HowToPlay"
+        
+        Button:
+            id: button
+            text: "Feed the fish!"
+

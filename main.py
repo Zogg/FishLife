@@ -34,7 +34,7 @@ class FishLifeScore(Popup):
     def __init__(self):
         super(FishLifeScore, self).__init__()
         self.pos = (Window.width/2 - self.width/2, Window.height/2 - self.height/2)
-        self.content = Widget(pos=self.pos)
+        self.content = Widget(pos=self.pos, size=self.size)
         self.content.add_widget(self.score_table)
         self.content.add_widget(self.total_score)
         self.content.add_widget(self.restart_btn)

@@ -94,6 +94,7 @@
             
         Label:
             id: calories_score
+            bold: True
             font_size: 20
             text: "0"
         Label:
@@ -101,8 +102,14 @@
             font_size: 20
             text: "0"       
     Label:
+        center: (root.x, score_table.top)
+        text: "The story so far..."
+            
+    Label:
         id: total_score
-        pos: (root.x + 5, root.y)
+        pos: (root.x + 5, root.y - 70)
+        height: 150
+        font_size: 13
         text_size: (self.width - 20, None)
         text: "In total fishy made 0 people happy during life. :("
                 

@@ -101,9 +101,7 @@
             id: junk_score
             font_size: 20
             text: "0"       
-    Label:
-        center: (root.x, score_table.top)
-        text: "The story so far..."
+
             
     Label:
         id: total_score
@@ -112,7 +110,12 @@
         font_size: 13
         text_size: (self.width - 20, None)
         text: "In total fishy made 0 people happy during life. :("
-                
+        
+    Label:
+        size_hint: (1, 1)
+        center: (total_score.center_x, total_score.y + 265)
+        text: "The story so far..." 
+                       
     Button:
         id: restart_btn
         text: "AGAIN!"

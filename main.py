@@ -9,7 +9,6 @@ from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.progressbar import ProgressBar
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.core.window import Window
 from kivy.clock import Clock
@@ -27,9 +26,31 @@ from fish import Fish
 from ship import Ship
 
 
-class FishLifeIntro(Widget):
-    pass
-
+class FishLifeIntro(Image):
+    help_on = BooleanProperty(False)
+    
+    def __init__(self, **kwargs):
+        super(FishLifeIntro, self).__init__(image="images/welcome.png", **kwargs)
+        self.help_btn.bind(on_press=self.toggle_help)
+        self.defaults = {"help_btn": self.help_btn.center, "go_btn": self.go_btn.center}
+        
+    def toggle_help(self, *largs):
+        self.help_on = not self.help_on
+        self.source = "images/howto.png" if self.help_on else "images/welcome.png"
+        
+        if self.help_on:
+            self.help_btn.center = (180, 130)
+            self.go_btn.center = (630, 130)
+            self.help_btn.text = "Back"
+        else:
+            # Easiest way to reset widget position?
+            parent = self.help_btn.parent
+            parent.remove_widget(self.help_btn)
+            parent.remove_widget(self.go_btn)
+            parent.add_widget(self.help_btn)
+            parent.add_widget(self.go_btn)
+            self.help_btn.text = "HowToPlay?"
+        
 class FishLifeScore(Popup):
     def __init__(self):
         super(FishLifeScore, self).__init__()

@@ -27,8 +27,7 @@ from kivy.clock import Clock
 
 class Food(Image):
     active = BooleanProperty(False)
-    storehouse = {"lightbulb": "dialog-information.png",
-                  "cucumber": {"image":"images/cucumber.png", "calories": (5,15)},
+    storehouse = {"cucumber": {"image":"images/cucumber.png", "calories": (5,15)},
                   "apple": {"image":"images/apple.png", "calories": (15,20)},
                   "banana": {"image":"images/banana.png", "calories": (10,35)},
                   "meat": {"image":"images/meat.png", "calories": (35,55)},
@@ -37,16 +36,13 @@ class Food(Image):
     # New obesity level unlocks new food! \o
     assorted = [["cucumber"],["apple"], ["banana"], ["meat"], ["bottle"]] 
 
-    def __init__(self, what=None, lvl=None, image = "dialog-information.png", **kwargs):
+    def __init__(self, what=None, lvl=1, image = "dialog-information.png", **kwargs):
         if lvl:
             what = choice([item for items in self.assorted[:lvl] for item in items ])
             
-        source = self.storehouse.get(what, "dialog-information.png")
-        try:
-            self.source = source["image"]
-        except:
-            self.source = source
-
+        source = self.storehouse[what]
+        self.source = source["image"]
+            
         super(Food, self).__init__(**kwargs)
         self.size = (48, 48)
         self.calories = randint(*self.storehouse[what]["calories"])
@@ -86,15 +82,12 @@ class Junk(Image):
                 ["oil_drop", "candy_mech_screw"],
                 ["oil_drop"]] 
            
-    def __init__(self, what=None, lvl=None, image="dialog-information.png", **kwargs):
+    def __init__(self, what=None, lvl=1, image="dialog-information.png", **kwargs):
         if lvl:
             what = choice([item for items in self.assorted[:lvl] for item in items ])
             
-        source = self.storehouse.get(what, "dialog-information.png")                        
-        try:
-            self.source = source["image"]
-        except:
-            self.source = source        
+        source = self.storehouse[what]                        
+        self.source = source["image"]
             
         super(Junk, self).__init__(**kwargs)
         self.size = (48, 48)

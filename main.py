@@ -89,7 +89,6 @@ class FishLifeGame(Widget):
         self.size = (Window.width, Window.height)
 
         super(FishLifeGame, self).__init__(*args, **kwargs)
-        #self.waves.texture = self.waves.texture.get_region(0,0, self.game_screen.width, self.waves.height)
         
         self.victory_screen = FishLifeScore()
         
@@ -107,8 +106,11 @@ class FishLifeGame(Widget):
         self.game_area.add_widget(self.fish, index=1)
         self.fish.active = True
         
+        # Tick tock, the food is dropped \o ooops
         Clock.schedule_interval(self.drop_food, 2)
+        # SAIL AWAY!
         Clock.schedule_interval(self.sail_ships, 5)
+        # Lets try and not overheat the CPU ;)
         Clock.schedule_interval(self.check_for_smthing_to_eat, 0.4)
         
         self.start_time = datetime.now() 
@@ -126,6 +128,8 @@ class FishLifeGame(Widget):
         self.add_widget(self.victory_screen)  
           
     def manufacture_ships(self, count = 1):
+        """Next batch coming for Somalia"""
+        
         for n in range(0, count):
             ship = Ship(horison=self.horison)
             self.ships.append(ship)
@@ -135,6 +139,7 @@ class FishLifeGame(Widget):
         self.ships[0].bind(on_stop_sailing=lambda instance: Clock.unschedule(self.drop_junk))      
         
     def drop_ship_onto_sea(self, ship):
+        """Randomly throw away the dead meat! BUahaha"""
         try:
             if not ship:
                 ship = self.ships.pop()
@@ -147,6 +152,7 @@ class FishLifeGame(Widget):
             Logger.debug("No ships left in dock.")   
             
     def check_for_smthing_to_eat(self, dt):
+        """Collision detection: leFish vs Food'n'Junk"""
         to_eat = []
         for stuff in self.game_area.children:
             if stuff.collide_widget(self.fish):
@@ -170,12 +176,15 @@ class FishLifeGame(Widget):
             Clock.schedule_once(partial(really_drop_food, food), random() * 2)
     
     def drop_junk(self, *args):
+        """Feels sooooOOo goood yeaaahhhh"""
+        
         for ship in self.ships:
             junk = Junk(lvl=self.fish.obese_lvl, x = ship.center_x + randint(-50,50), y = ship.y + randint(-5,5))
             self.game_area.add_widget(junk)
             junk.active = True
         
     def sail_ships(self, timer):
+        """I wonder, wheres the captain?"""
         for ship in self.ships:
             ship.sail()        
 
@@ -188,6 +197,8 @@ class FishLifeBones(App):
         super(FishLifeBones, self).__init__(*args, **kwargs)
 
     def build_config(self, config):
+        """Leaving this here for future reference"""
+        
         config.setdefaults('aquarium', {"waterline":200})
         #config.setdefaults('graphics', {"width":1280, "height": 726})
         
@@ -216,6 +227,7 @@ class FishLifeBones(App):
         anim.bind(on_complete=lambda instance, value: Window.remove_widget(self.fader))
         anim.start(self.fader)
         
+        # Timing game start with fade in
         if not kwargs.get("restart", False):
             Clock.schedule_once(self.root.play, 0.85)
         else:
@@ -239,9 +251,6 @@ class FishLifeBones(App):
         anim = Animation(alpha = 1.0, d=0.6)
         anim.bind(on_complete=self.begin_game)
         anim.start(self.fader)
-        
-    def _transition_into_game(self):
-        pass
 
 class ScreenFader(Widget):
 

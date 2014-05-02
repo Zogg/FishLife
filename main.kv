@@ -66,62 +66,65 @@
             
 <FishLifeScore>:
     restart_btn: restart_btn
-    
+
+    box_layout: box_layout
     score_table: score_table
     calories_score: calories_score
     junk_score: junk_score
     total_score: total_score
-    
+
     title: "DEATH... and Victory!"
     auto_dismiss: False
     size_hint: (None, None)
     size: (400,400)
     pos: self.pos
     id: score_w
-    
-    
-    GridLayout:
-        id: score_table
-        cols: 2
-        size_hint: (1.0, None)
-        height:100
-        pos: (root.x, root.top - self.height - 50)
+
+    BoxLayout:
+        id: box_layout
+        orientation: 'vertical'
+
+        GridLayout:
+            id: score_table
+            cols: 2
+            size_hint: (1.0, None)
+            height:100
+            pos: (root.x, root.top - self.height - 50)
+
+            Label:
+                text: "Total Calories Consumed"
+            Label:
+                text: "Tons of Junk swallowed"
+
+            Label:
+                id: calories_score
+                bold: True
+                font_size: 20
+                text: "0"
+            Label:
+                id: junk_score
+                font_size: 20
+                text: "0"
 
         Label:
-            text: "Total Calories Consumed"
-        Label:
-            text: "Tons of Junk swallowed"
-            
-        Label:
-            id: calories_score
-            bold: True
-            font_size: 20
-            text: "0"
-        Label:
-            id: junk_score
-            font_size: 20
-            text: "0"       
+            id: total_score
+            pos: (root.x + 5, root.y - 70)
+            height: 150
+            font_size: 13
+            text_size: (self.width - 20, None)
+            text: "In total fishy made 0 people happy during life. :("
 
-            
-    Label:
-        id: total_score
-        pos: (root.x + 5, root.y - 70)
-        height: 150
-        font_size: 13
-        text_size: (self.width - 20, None)
-        text: "In total fishy made 0 people happy during life. :("
-        
-    Label:
-        size_hint: (1, 1)
-        center: (total_score.center_x, total_score.y + 265)
-        text: "The story so far..." 
-                       
-    Button:
-        id: restart_btn
-        text: "AGAIN!"
-        pos: root.pos
-        size_hint: (None, None)
-        size: (root.width, 30)
+        Label:
+            size_hint: (1, 1)
+            center: (total_score.center_x, total_score.y + 265)
+            text: "The story so far..."
+
+        Button:
+            id: restart_btn
+            text: "AGAIN!"
+            pos: box_layout.pos
+            size_hint: (None, None)
+            size: (box_layout.width, 30)
 
 <FoodScoreFeedback>:
     font_size: 20

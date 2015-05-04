@@ -35,6 +35,7 @@ from kivy.animation import Animation
 from kivy.graphics import Color
 from kivy.graphics.vertex_instructions import *
 from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
+from kivy.uix.boxlayout import BoxLayout
 
 from kivy.lang import Builder
 from kivy.logger import Logger
@@ -73,11 +74,9 @@ class FishLifeScore(Popup):
     def __init__(self):
         super(FishLifeScore, self).__init__()
         self.pos = (Window.width/2 - self.width/2, Window.height/2 - self.height/2)
-        self.content = Widget(pos=self.pos, size=self.size)
-        self.content.add_widget(self.score_table)
-        self.content.add_widget(self.total_score)
-        self.content.add_widget(self.restart_btn)
-    
+        self.box_layout.pos = self.pos
+        self.box_layout.size = self.size
+
 class FishLifeGame(Widget):
 
     ships = ListProperty([])
@@ -125,8 +124,8 @@ class FishLifeGame(Widget):
         self.victory_screen.calories_score.text = str(self.fish.total_calories)
         self.victory_screen.junk_score.text = str(self.fish.junk_swallowed)
         self.victory_screen.total_score.text = "On %s a fish was caught, size of %s, which well fed the people of the world for %s days straight!" % (datetime.now().strftime("%B %d, %Y"), self.fish.rank[self.fish.obese_lvl - 1], (datetime.now() - self.start_time).seconds )
-        self.add_widget(self.victory_screen)  
-          
+        self.victory_screen.open()
+
     def manufacture_ships(self, count = 1):
         """Next batch coming for Somalia"""
         

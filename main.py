@@ -30,7 +30,6 @@ from kivy.uix.progressbar import ProgressBar
 from kivy.uix.gridlayout import GridLayout
 from kivy.core.window import Window
 from kivy.clock import Clock
-from kivy.clock import _hash
 from kivy.animation import Animation
 from kivy.graphics import Color
 from kivy.graphics.vertex_instructions import *
@@ -49,7 +48,7 @@ class FishLifeIntro(Image):
     help_on = BooleanProperty(False)
     
     def __init__(self, **kwargs):
-        super(FishLifeIntro, self).__init__(image="images/welcome.png", **kwargs)
+        super(FishLifeIntro, self).__init__(source="images/welcome.png", **kwargs)
         self.help_btn.bind(on_press=self.toggle_help)
         self.defaults = {"help_btn": self.help_btn.center, "go_btn": self.go_btn.center}
         

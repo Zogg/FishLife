@@ -16,6 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
+
 from math import sin, cos, radians
 
 from kivy.uix.image import Image
@@ -106,7 +108,7 @@ class Fish(Scatter):
             #TODO: will there be lvl limit?
             if self.total_calories >= self.lvlup_on_calories[self.obese_lvl]:
                 self.obese_lvl += 1
-                print self.obese_lvl
+                print(self.obese_lvl)
                 self.image.size = (self.image.width * self.size_increment[self.obese_lvl-1], self.image.height * self.size_increment[self.obese_lvl-1])
                 self.size = self.image.size
         except:

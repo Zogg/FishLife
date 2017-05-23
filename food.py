@@ -123,7 +123,8 @@ class FoodScoreFeedback(Label):
             self.color = (1,0,0,1)
         self.text = str(score)
         self.bold = True    
-        super(FoodScoreFeedback, self).__init__(**kwargs)
+        # super(FoodScoreFeedback, self).__init__(**kwargs)
+        super(FoodScoreFeedback, self).__init__()
         
         anim = Animation(y=self.y + 45, d=0.33)
         Clock.schedule_once(self.dissapear, 1.3)
